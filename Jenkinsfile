@@ -1,42 +1,45 @@
 pipeline{
-  agent {
-    label {
-      label 'slave1'
-    }
-  }
-  stages{
-    stage('version-control'){
-      steps{
-        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/etechDevops/jenkins-parallel-job.git']]])
-      }
-    }
-    stage('parallel-job'){
-      parallel{
-        stage('sub-job1'){
-          steps{
-            echo 'action1'
-          }
-        }
-        stage('sub-job2'){
-          steps{
-            echo 'action2'
-          }
-        }
-        stage('sub-job3'){
-            steps{
-                echo 'action3'
-            }
-        }
-      }
-    }
-    stage('codebuild'){
-      agent {
+	agent any
         label {
-            label1 'slave2'
+            label 'slave1'
         }
-        steps{
-            sh 'cat /etc/passwd'
-        }
-    } 
-  }
+	stages{
+		stage('git-clone'){
+			steps{
+				checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/Annickkameni/team3-parallel.git']]])
+			}
+		}
+	   stage('parallel-level'){
+	       parallel{
+	           stage('sub-job1'){
+	               steps{
+	                   echo "sub-job1 task"
+	               }
+	           }
+	           stage('sub-job2'){
+	               steps{
+	                   echo "sub-job2 task"
+	               }
+	           }
+			   stage('user-check'){
+				  steps{
+					sh 'cat /etc/passwd | grep jenkins'
+				  }
+			   }
+	       }
+	   }
+	   stage('version-check'){
+	       steps{
+	           echo "end of parallel job"
+	       }
+	   }
+	   stage('webhook-fix'){
+            label{
+                label 'slave2'
+            }
+		    steps{
+			    echo "webhook fix"
+		    }
+	    }
+	}
 }
