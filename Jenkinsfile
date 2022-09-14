@@ -7,7 +7,8 @@ pipeline{
   stages{
     stage('version-control'){
       steps{
-        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/Annickkameni/parallel-slave-pipeline.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-id', url: 'https://github.com/etechDevops/jenkins-parallel-job.git']]])
+      }
     }
     stage('parallel-job'){
       parallel{
@@ -31,12 +32,11 @@ pipeline{
     stage('codebuild'){
       agent {
         label {
-          label 'slave2'
+            label1 'slave2'
         }
-      }
-      steps{
-        sh 'cat /etc/passwd'
-      }
-    }
+        steps{
+            sh 'cat /etc/passwd'
+        }
+    } 
   }
 }
